@@ -1,0 +1,41 @@
+server:
+  port: 8080
+spring:
+  application:
+    name: api-gateway
+  cloud:
+    gateway:
+      globalcors:
+        cors-configurations:
+          '[/**]':
+            allowedOrigins:
+              - "http://localhost:5173"
+            allowedMethods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"]
+            allowedHeaders: "*"
+      routes:
+        - id: auth-service
+          uri: lb://auth-service
+          predicates: [ "Path=/api/auth/**" ]
+          filters: [ "StripPrefix=1" ]
+        - id: customer-service
+          uri: lb://customer-service
+          predicates: [ "Path=/api/customers/**" ]
+          filters: [ "StripPrefix=1" ]
+        - id: payment-service
+          uri: lb://payment-service
+          predicates: [ "Path=/api/payments/**" ]
+          filters: [ "StripPrefix=1" ]
+        - id: ledger-service
+          uri: lb://ledger-service
+          predicates: [ "Path=/api/ledger/**" ]
+          filters: [ "StripPrefix=1" ]
+        - id: notification-service
+          uri: lb://notification-service
+          predicates: [ "Path=/api/notifications/**" ]
+          filters: [ "StripPrefix=1" ]
+eureka:
+  client:
+    service-url:
+      defaultZone: ${EUREKA_URL:http://localhost:8761/eureka}
+jwt:
+  secret: ${JWT_SECRET:bfsi-demo-secret-key-change-in-production-32b!}
